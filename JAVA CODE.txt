@@ -1,0 +1,383 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package com.mycompany.todolistapp;
+
+/**
+ *
+ * @author kieth
+ */
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.text.ParseException;
+import javax.swing.table.JTableHeader;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+
+
+
+public class ToDoListApp extends JFrame implements ActionListener {
+
+    private JTextField nameField;
+    private JTextField dateField;
+    private JTextField priorityField;
+    private DefaultTableModel tableModel;
+    private JTable table;
+    
+    
+
+    public ToDoListApp() {
+        // Set the title of the JFrame
+        setTitle("To-Do List");
+
+        // Set the size of the JFrame
+        setSize(620, 400);
+
+        // Set the layout of the JFrame
+       setLayout(null);
+
+        // Create a JPanel for the input fields
+         JPanel inputPanel = new JPanel(null);
+
+
+        // Create JLabels and JTextFields for the input fields
+        JLabel nameLabel = new JLabel("Task:");
+    nameField = new JTextField();
+    nameField.setText("a-z");
+    nameField.addFocusListener(new FocusListener() {
+        @Override
+        public void focusGained(FocusEvent e) {
+            if (nameField.getText().equals("a-z")) {
+                nameField.setText("");
+            }
+        }
+
+        @Override
+        public void focusLost(FocusEvent e) {
+            if (nameField.getText().isEmpty()) {
+                nameField.setText("a-z");
+            }
+        }
+    });
+    
+    JLabel dateLabel = new JLabel("Date:");
+    dateField = new JTextField();
+    dateField.setText("mm/dd/yyyy");
+    dateField.addFocusListener(new FocusListener() {
+        @Override
+        public void focusGained(FocusEvent e) {
+            if (dateField.getText().equals("mm/dd/yyyy")) {
+                dateField.setText("");
+            }
+        }
+
+        @Override
+        public void focusLost(FocusEvent e) {
+            if (dateField.getText().isEmpty()) {
+                dateField.setText("mm/dd/yyyy");
+            }
+        }
+    });
+
+    JLabel priorityLabel = new JLabel("Priority:");
+    priorityField = new JTextField();
+    priorityField.setText("Enter priority");
+    priorityField.addFocusListener(new FocusListener() {
+        @Override
+        public void focusGained(FocusEvent e) {
+            if (priorityField.getText().equals("Enter priority")) {
+                priorityField.setText("");
+            }
+        }
+
+        @Override
+        public void focusLost(FocusEvent e) {
+            if (priorityField.getText().isEmpty()) {
+                priorityField.setText("Enter priority");
+            }
+        }
+    });
+
+
+    nameLabel.setBounds(10, 10, 50, 20);
+    nameField.setBounds(70, 10, 150, 20);
+    dateLabel.setBounds(10, 40, 50, 20);
+    dateField.setBounds(70, 40, 150, 20);
+    priorityLabel.setBounds(10, 70, 50, 20);
+    priorityField.setBounds(70, 70, 150, 20);
+
+    // Add the JLabels and JTextFields to the inputPanel
+    inputPanel.add(nameLabel);
+    inputPanel.add(nameField);
+    inputPanel.add(dateLabel);
+    inputPanel.add(dateField);
+    inputPanel.add(priorityLabel);
+    inputPanel.add(priorityField);
+    setResizable(false);
+    
+   
+        
+       
+        // Create JButtons for adding, completing, and deleting tasks
+        JButton addButton = new JButton("Add Task");
+         addButton.setBounds(10, 100, 209, 20);
+         
+         
+
+        addButton.setBackground(new Color(34, 139, 34));
+        addButton.setForeground(Color.WHITE);
+        addButton.setFocusPainted(false);
+        addButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                addButton.setBackground(new Color(0, 100, 0));
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                addButton.setBackground(new Color(34, 139, 34));
+            }
+            
+        });
+        
+       
+
+        JButton completeButton = new JButton("Mark as Completed");
+        completeButton.setBounds(10, 130, 209, 20);
+
+        completeButton.setBackground(new Color(34, 139, 34));
+        completeButton.setForeground(Color.WHITE);
+        completeButton.setFocusPainted(false);
+        completeButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                completeButton.setBackground(new Color(0, 100,0 ));
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                completeButton.setBackground(new Color(34, 139, 34));
+            }
+        });
+       
+        
+        completeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Get the selected row index
+                int rowIndex = table.getSelectedRow();
+                if (rowIndex != -1) {
+                    // Update the status of the selected row to "Completed"
+                    tableModel.setValueAt("Completed", rowIndex, 3);
+                }
+            }
+        });
+        
+        
+
+        JButton deleteButton = new JButton("Delete Task");
+        deleteButton.setBounds(10, 160, 209, 20);
+
+        deleteButton.setBackground(new Color(34, 139, 34));
+        deleteButton.setForeground(Color.WHITE);
+        deleteButton.setFocusPainted(false);
+        deleteButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                deleteButton.setBackground(new Color(0, 100, 0));
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                deleteButton.setBackground(new Color(34, 139, 34));
+            }
+        });
+ 
+      deleteButton.addActionListener(new ActionListener() {
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        // Get the selected row index
+        int rowIndex = table.getSelectedRow();
+        if (rowIndex != -1) {
+            // Show a confirmation dialog before deleting the task
+            int confirm = JOptionPane.showConfirmDialog(ToDoListApp.this, "Are you sure you want to delete this task?", "Confirmation", JOptionPane.YES_NO_OPTION);
+            if (confirm == JOptionPane.YES_OPTION) {
+                // Remove the selected row from the table
+                tableModel.removeRow(rowIndex);
+            }
+        }
+    }
+});
+     
+            // Add the buttons to the inputPanel
+             inputPanel.setBounds(0, 0, 300, 340);
+             add(inputPanel);
+    inputPanel.add(addButton);
+    inputPanel.add(completeButton);
+    inputPanel.add(deleteButton);
+
+    // Create a JTable with default table model
+    tableModel = new DefaultTableModel();
+    tableModel.addColumn("Name");
+    tableModel.addColumn("Date");
+    tableModel.addColumn("Priority");
+    tableModel.addColumn("Status");
+    table = new JTable(tableModel);
+    JTableHeader tableHeader = table.getTableHeader();
+    tableHeader.setBackground(new Color(34, 139, 34));
+    tableHeader.setForeground(Color.WHITE);
+   
+
+    // Add the JTable to a JScrollPane
+    JScrollPane scrollPane = new JScrollPane(table);
+    // Add the inputPanel and scrollPane to the JFrame
+     scrollPane.setBounds(300, 10, 300, 320);
+    add(scrollPane);
+     scrollPane.setBorder(BorderFactory.createLineBorder(new Color(34, 139, 34)));
+     
+
+    // Add ActionListener to the addButton
+    addButton.addActionListener(this);
+
+    // Set default close operation and make the JFrame visible
+    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    setVisible(true);
+}
+
+public static void main(String[] args) {
+    // Create an instance of ToDoListApp
+    ToDoListApp app = new ToDoListApp();
+}
+
+// ...
+
+
+@Override
+public void actionPerformed(ActionEvent e) {
+    // Get the text from the name, date, and priority fields
+    String name = nameField.getText();
+    String date = dateField.getText();
+    String priority = priorityField.getText();
+
+    // Check if all input fields contain default values
+    if (name.equals("a-z") || date.equals("mm/dd/yyyy") || priority.equals("Enter priority")) {
+        JOptionPane.showMessageDialog(this, "Please fill all the fields.", "Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    // Check if any input field is empty
+    if (name.isEmpty() || date.isEmpty() || priority.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Please fill all the fields.", "Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    // Validate the input fields
+    if (!validateInputFields()) {
+        return;
+    }
+
+    // Create a SimpleDateFormat object to parse the date string
+    SimpleDateFormat sdf = new SimpleDateFormat("mm/dd/yyyy");
+    Date dateObj = null;
+    try {
+        dateObj = sdf.parse(date);
+    } catch (ParseException ex) {
+        JOptionPane.showMessageDialog(this, "Please enter a valid date (mm/dd/yyyy)", "Invalid Date", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    // Format the date as a string in the desired format
+    String formattedDate = sdf.format(dateObj);
+
+    // Create an array of objects to represent a new row in the table
+    Object[] newRow = {name, formattedDate, priority, "Pending"};
+
+    // Add the new row to the table model
+    tableModel.addRow(newRow);
+
+    // Clear the input fields
+    nameField.setText("a-z");
+    dateField.setText("mm/dd/yyyy");
+    priorityField.setText("Enter priority");
+
+    JOptionPane.showMessageDialog(ToDoListApp.this, "New task added!"+ name);
+}
+
+
+
+private boolean validateInputFields() {
+    boolean validInput = true;
+
+    // Validate name input
+    if (nameField.getText().isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Please enter a name for the task.", "Error", JOptionPane.ERROR_MESSAGE);
+        nameField.setBackground(Color.RED);
+        nameField.setForeground(Color.WHITE);
+        validInput = false;
+    } else if (!nameField.getText().matches("[a-zA-Z]+")) {
+        JOptionPane.showMessageDialog(this, "Name must contain only letters.", "Error", JOptionPane.ERROR_MESSAGE);
+        nameField.setBackground(Color.RED);
+        nameField.setForeground(Color.WHITE);
+        validInput = false;
+    } else {
+        nameField.setBackground(Color.WHITE);
+        nameField.setForeground(Color.BLACK);
+    }
+
+    // Validate date input
+    if (dateField.getText().isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Please enter a date for the task.", "Error", JOptionPane.ERROR_MESSAGE);
+        dateField.setBackground(Color.RED);
+        dateField.setForeground(Color.WHITE);
+        validInput = false;
+    } else {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("mm/dd/yyyy");
+        dateFormat.setLenient(true);
+        try {
+            dateFormat.parse(dateField.getText());
+            dateField.setBackground(Color.WHITE);
+            dateField.setForeground(Color.BLACK);
+        } catch (ParseException ex) {
+            JOptionPane.showMessageDialog(this, "Please enter a valid date in the format MM/dd/yyyy.", "Invalid Date", JOptionPane.ERROR_MESSAGE);
+            dateField.setBackground(Color.RED);
+            dateField.setForeground(Color.WHITE);
+            validInput = false;
+        }
+    }
+
+    // Validate priority input
+    if (priorityField.getText().isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Please enter a priority for the task.", "Error", JOptionPane.ERROR_MESSAGE);
+        priorityField.setBackground(Color.RED);
+        priorityField.setForeground(Color.WHITE);
+        validInput = false;
+    } else {
+        try {
+            Integer.parseInt(priorityField.getText());
+            priorityField.setBackground(Color.WHITE);
+            priorityField.setForeground(Color.BLACK);
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Priority must be a number.", "Error", JOptionPane.ERROR_MESSAGE);
+            priorityField.setBackground(Color.RED);
+            priorityField.setForeground(Color.WHITE);
+            validInput = false;
+        }
+    }
+
+    // If any of the input fields are invalid, show an error message
+    if (!validInput) {
+        JOptionPane.showMessageDialog(this, "Please correct the errors and try again.", "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    return validInput;
+}
+}
